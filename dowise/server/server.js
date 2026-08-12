@@ -2,13 +2,18 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const path = require("path");
 const connectDB = require("./db");
 const authRoutes = require("./routes/authRoutes");
 const aiRoutes = require("./routes/aiRoutes");
 const planRoutes = require("./routes/planRoutes");
 const templateRoutes = require("./routes/templateRoutes");
+const resourceRoutes = require("./routes/resourceRoutes");
 const Template = require("./models/Template");
-dotenv.config({ path: './server/.env' });
+
+// Load environment variables from .env next to this file, regardless of CWD
+dotenv.config({ path: path.join(__dirname, ".env") });
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -19,6 +24,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/plans", planRoutes);
 app.use("/api/templates", templateRoutes);
+app.use("/api/resources", resourceRoutes);
 
 // Seed templates if none exist (helpful fallback)
 async function seedTemplates() {

@@ -1,14 +1,270 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+:root {
+  /* Primary Colors */
+  --primary: #6366f1;
+  --primary-dark: #4f46e5;
+  --primary-light: #818cf8;
+  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  
+  /* Secondary Colors */
+  --secondary: #10b981;
+  --secondary-dark: #059669;
+  --secondary-light: #34d399;
+  
+  /* Accent Colors (Cyan) */
+  --accent: #06b6d4;
+  --accent-dark: #0891b2;
+  --accent-light: #22d3ee;
+  --accent-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+  
+  /* Neutral Colors */
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-800: #1e293b;
+  --gray-900: #0f172a;
+  
+  /* Semantic Colors */
+  --success: #10b981;
+  --error: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
+  
+  /* Background Colors */
+  --bg-primary: #fcfcfd;
+  --bg-secondary: #f4f5f8; /* Softer warm gray-slate (reduces eye strain/glare) */
+  --bg-tertiary: #e9eff5;
+  --bg-glass: rgba(252, 252, 253, 0.8);
+  --border-glass: rgba(252, 252, 253, 0.5);
+  
+  /* Text Colors */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-tertiary: #94a3b8;
+  --text-inverse: #ffffff;
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  
+  /* Border Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-full: 9999px;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 8px 16px -4px rgba(99, 102, 241, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 16px 24px -8px rgba(99, 102, 241, 0.08), 0 4px 12px -4px rgba(0, 0, 0, 0.03);
+  --shadow-xl: 0 24px 36px -12px rgba(99, 102, 241, 0.12), 0 8px 18px -6px rgba(0, 0, 0, 0.04);
+  
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Typography */
+  --font-sans: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'Fira Code', 'Courier New', monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  line-height: 1.6;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-    
+  font-family: var(--font-mono);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--gray-300);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-400);
+}
+
+/* Focus Styles */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+  background: var(--primary-light);
+  color: var(--text-inverse);
+}
+/* Dark Mode Theme Variable overrides */
+body.dark {
+  --bg-primary: #0f172a;
+  --bg-secondary: #0b0f19;
+  --bg-tertiary: #1e293b;
+  --bg-glass: rgba(15, 23, 42, 0.75);
+  --border-glass: rgba(255, 255, 255, 0.15);
+  
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #64748b;
+  --text-inverse: #0f172a;
+  
+  --gray-50: #1e293b;
+  --gray-100: #0f172a;
+  --gray-200: #334155;
+  --gray-300: #475569;
+  --gray-400: #64748b;
+  --gray-500: #94a3b8;
+}
+
+body.dark .nav {
+  background: rgba(15, 23, 42, 0.95);
+  border-bottom-color: var(--gray-200);
+}
+
+body.dark .plan-card {
+  color: #cbd5e1 !important;
+  background: #1e293b !important;
+}
+
+body.dark .plan-card .plan-name {
+  color: #f8fafc !important;
+}
+
+body.dark .plan-card span {
+  color: #cbd5e1 !important;
+}
+
+body.dark .task-item {
+  color: #cbd5e1 !important;
+  background: #1e293b !important;
+  border-color: #334155 !important;
+}
+
+body.dark .task-item .task-title {
+  color: #f8fafc !important;
+}
+
+body.dark .task-item .task-meta-item span {
+  color: #94a3b8 !important;
+}
+
+body.dark .profile-dropdown-item.logout-item:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+}
+
+body.dark .theme-toggle-btn:hover {
+  background: var(--gray-200);
+}
+
+body.dark .profile-dropdown-item:hover {
+  background: var(--gray-200);
+}
+
+body.dark .profile-dropdown-menu {
+  background: var(--bg-primary);
+  border-color: var(--gray-200);
+}
+
+body.dark .resource-selector-modal {
+  background: var(--bg-primary);
+  border-color: var(--gray-200);
+}
+
+body.dark .modal-content {
+  background: var(--bg-primary) !important;
+  border-color: var(--gray-200) !important;
+}
+
+body.dark .input-field {
+  background: var(--gray-50) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--gray-200) !important;
+}
+
+body.dark .input-field:focus {
+  border-color: var(--primary) !important;
+}
+
+body.dark .footer-bottom-line {
+  border-top-color: var(--gray-200) !important;
+}
+
+body.dark .planner-footer-premium {
+  border-color: var(--gray-200) !important;
+}
+
+body.dark .resource-column {
+  background: var(--gray-50) !important;
+  border-color: var(--gray-200) !important;
+}
+
+body.dark .resource-btn-link {
+  background: var(--gray-100) !important;
+  border-color: var(--gray-200) !important;
+  color: var(--text-primary) !important;
+}
+
+body.dark .resource-btn-link:hover {
+  background: var(--gray-200) !important;
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+body.dark .resource-btn-link.mdn-btn:hover {
+  border-color: var(--text-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+body.dark .resource-btn-link.youtube-btn {
+  background: rgba(239, 68, 68, 0.1) !important;
+  border-color: rgba(239, 68, 68, 0.3) !important;
+  color: #fca5a5 !important;
+}
+
+body.dark .resource-btn-link.youtube-btn:hover {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: #ef4444 !important;
+  color: #fca5a5 !important;
+}
+
+body.dark .career-growth-trend {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #34d399 !important;
 }

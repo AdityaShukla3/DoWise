@@ -3,6 +3,7 @@ const express = require("express");
 const Template = require("../models/Template");
 const Plan = require("../models/Plan");
 const { mapInputToCategories } = require("../utils/mapInput");
+const { auth } = require("../middleware/auth");
 const router = express.Router();
 
 // Helper to extract JSON block or parse raw
@@ -612,5 +613,169 @@ function generateFallbackTopicSuggestions(input) {
 
   return suggestions;
 }
+
+// Generate MCQ Quiz for Revision - owner only
+router.get("/plans/:id/quiz", auth, async (req, res) => {
+  try {
+    const plan = await Plan.findById(req.params.id);
+    if (!plan) return res.status(404).json({ message: "Plan not found" });
+    if (String(plan.userId) !== String(req.user._id) && req.user.role !== "admin")
+      return res.status(403).json({ message: "Forbidden" });
+
+    const useOpenAI = String(process.env.USE_OPENAI || "false").toLowerCase() === "true";
+    const key = process.env.OPENAI_API_KEY;
+
+    if (useOpenAI && key) {
+      const topicList = plan.tasks.map(t => t.title).join(", ");
+      const prompt = `Create a multiple-choice quiz with exactly 15 questions to evaluate a user's knowledge on the course "${plan.rawInput}".
+The specific topics/tasks they covered are: ${topicList}.
+Each question should test concepts related to these topics.
+
+Generate the output ONLY as a JSON array of objects (do not include markdown syntax, code blocks, or extra text).
+Each object in the array must have exactly the following structure:
+{
+  "question": "...",
+  "options": ["Option A", "Option B", "Option C", "Option D"],
+  "correctAnswerIndex": <0, 1, 2, or 3>,
+  "topic": "..."
+}
+
+Ensure the questions range from beginner to intermediate difficulty.`;
+
+      const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${key}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: "You are an expert technical evaluator. You create clear, accurate multiple-choice evaluation quizzes for student topics and return ONLY JSON arrays." },
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.5,
+          max_tokens: 2500
+        })
+      });
+
+      const d = await resp.json();
+      const raw = d?.choices?.[0]?.message?.content || "";
+      const parsed = parseJSONSafe(raw);
+      if (parsed && Array.isArray(parsed) && parsed.length > 0) {
+        return res.json({ quiz: parsed });
+      }
+    }
+
+    // Fallback static quiz if OpenAI fails or is not enabled
+    const fallbackQuiz = plan.tasks.slice(0, 15).map((t, idx) => ({
+      question: `Which of the following best describes the core concept of "${t.title}"?`,
+      options: [
+        `Implementing best practices for ${t.title}`,
+        `Ignoring fundamental standards of ${t.title}`,
+        `Replacing ${t.title} with unrelated tasks`,
+        `None of the above`
+      ],
+      correctAnswerIndex: 0,
+      topic: t.title
+    }));
+    res.json({ quiz: fallbackQuiz });
+  } catch (err) {
+    console.error("mcq quiz generation error", err);
+    res.status(500).json({ message: "Failed to generate evaluation quiz" });
+  }
+});
+
+// Evaluate MCQ Quiz Answers - owner only
+router.post("/plans/:id/evaluate", auth, async (req, res) => {
+  try {
+    const { answers, quiz } = req.body;
+    if (!answers || !quiz) return res.status(400).json({ message: "answers and quiz are required" });
+
+    const plan = await Plan.findById(req.params.id);
+    if (!plan) return res.status(404).json({ message: "Plan not found" });
+    if (String(plan.userId) !== String(req.user._id) && req.user.role !== "admin")
+      return res.status(403).json({ message: "Forbidden" });
+
+    let score = 0;
+    const details = quiz.map((q, idx) => {
+      const userAns = answers[idx];
+      const isCorrect = userAns === q.correctAnswerIndex;
+      if (isCorrect) score++;
+      return {
+        question: q.question,
+        topic: q.topic,
+        correct: isCorrect,
+        userAnswer: q.options[userAns] || "Unanswered",
+        correctAnswer: q.options[q.correctAnswerIndex]
+      };
+    });
+
+    const useOpenAI = String(process.env.USE_OPENAI || "false").toLowerCase() === "true";
+    const key = process.env.OPENAI_API_KEY;
+
+    let feedback = "";
+    let improvementTopics = [];
+
+    if (useOpenAI && key) {
+      const incorrectList = details.filter(d => !d.correct).map(d => `${d.topic}: "${d.question}" (answered: ${d.userAnswer}, correct: ${d.correctAnswer})`).join("\n");
+      const correctList = details.filter(d => d.correct).map(d => d.topic).join(", ");
+      
+      const prompt = `A student completed a quiz for the course "${plan.rawInput}".
+Total Score: ${score} out of ${quiz.length}.
+Topics they answered correctly: ${correctList || 'None'}.
+Details of questions they answered incorrectly:
+${incorrectList || 'None (Perfect Score!)'}
+
+Please analyze their performance and return a JSON object with:
+{
+  "feedback": "A concise paragraph summarizing their performance and encouraging them.",
+  "improvementTopics": ["Topic 1", "Topic 2"]
+}
+Limit improvementTopics to maximum 3 items, representing specific areas they should review.`;
+
+      const resp = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${key}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: "You are an expert tutor. Evaluate the quiz results and provide structured feedback and topic improvement suggestions in JSON." },
+            { role: "user", content: prompt }
+          ],
+          temperature: 0.4,
+          max_tokens: 800
+        })
+      });
+
+      const d = await resp.json();
+      const raw = d?.choices?.[0]?.message?.content || "";
+      const parsed = parseJSONSafe(raw);
+      if (parsed) {
+        feedback = parsed.feedback || "";
+        improvementTopics = parsed.improvementTopics || [];
+      }
+    }
+
+    if (!feedback) {
+      feedback = `You scored ${score}/${quiz.length}. ${score === quiz.length ? 'Perfect job!' : 'Good effort, review the incorrect topics to improve your score!'}`;
+      improvementTopics = details.filter(d => !d.correct).map(d => d.topic).slice(0, 3);
+    }
+
+    res.json({
+      score,
+      total: quiz.length,
+      feedback,
+      improvementTopics,
+      details
+    });
+  } catch (err) {
+    console.error("quiz evaluation error", err);
+    res.status(500).json({ message: "Failed to evaluate quiz" });
+  }
+});
 
 module.exports = router;

@@ -231,83 +231,95 @@ export default function AILearningAnalytics({ userId, token, plans }) {
 
   return (
     <div className="card">
-      <h3>🤖 AI Learning Analytics</h3>
+      <h3 style={{ color: 'var(--text-primary)' }}>🤖 AI Learning Analytics</h3>
       
       {/* Key Metrics */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginBottom: '20px' }}>
-        <div style={{ textAlign: 'center', padding: '15px', background: '#f8f9fa', borderRadius: '8px' }}>
+        <div style={{ textAlign: 'center', padding: '15px', background: 'var(--gray-50)', border: '1px solid var(--gray-200)', borderRadius: '8px' }}>
           <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#007bff' }}>
             {analytics.completionRate}%
           </div>
-          <div style={{ fontSize: '14px', color: '#666' }}>Completion Rate</div>
+          <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Completion Rate</div>
         </div>
         
-        <div style={{ textAlign: 'center', padding: '15px', background: '#f8f9fa', borderRadius: '8px' }}>
+        <div style={{ textAlign: 'center', padding: '15px', background: 'var(--gray-50)', border: '1px solid var(--gray-200)', borderRadius: '8px' }}>
           <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#28a745' }}>
             {analytics.learningVelocity}
           </div>
-          <div style={{ fontSize: '14px', color: '#666' }}>Tasks/Day</div>
+          <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Tasks/Day</div>
         </div>
         
-        <div style={{ textAlign: 'center', padding: '15px', background: '#f8f9fa', borderRadius: '8px' }}>
+        <div style={{ textAlign: 'center', padding: '15px', background: 'var(--gray-50)', border: '1px solid var(--gray-200)', borderRadius: '8px' }}>
           <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#ffc107' }}>
             {analytics.totalTasks}
           </div>
-          <div style={{ fontSize: '14px', color: '#666' }}>Total Tasks</div>
+          <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Total Tasks</div>
         </div>
         
-        <div style={{ textAlign: 'center', padding: '15px', background: '#f8f9fa', borderRadius: '8px' }}>
+        <div style={{ textAlign: 'center', padding: '15px', background: 'var(--gray-50)', border: '1px solid var(--gray-200)', borderRadius: '8px' }}>
           <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#17a2b8' }}>
             {analytics.daysSinceStart}
           </div>
-          <div style={{ fontSize: '14px', color: '#666' }}>Days Learning</div>
+          <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>Days Learning</div>
         </div>
       </div>
 
       {/* AI Insights */}
       <div style={{ marginBottom: '20px' }}>
-        <h4>🧠 AI-Generated Insights</h4>
+        <h4 style={{ color: 'var(--text-primary)' }}>🧠 AI-Generated Insights</h4>
         <div style={{ display: 'grid', gap: '10px' }}>
-          {insights.map((insight, idx) => (
-            <div key={idx} style={{
-              padding: '12px',
-              background: insight.type === 'excellent' ? '#d4edda' : 
-                         insight.type === 'good' ? '#d1ecf1' :
-                         insight.type === 'improvement' ? '#fff3cd' :
-                         insight.type === 'warning' ? '#f8d7da' :
-                         insight.type === 'achievement' ? '#e2e3e5' : '#f8f9fa',
-              border: `1px solid ${
-                insight.type === 'excellent' ? '#c3e6cb' :
-                insight.type === 'good' ? '#bee5eb' :
-                insight.type === 'improvement' ? '#ffeaa7' :
-                insight.type === 'warning' ? '#f5c6cb' :
-                insight.type === 'achievement' ? '#d6d8db' : '#dee2e6'
-              }`,
-              borderRadius: '8px'
-            }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '5px' }}>{insight.title}</div>
-              <div style={{ fontSize: '14px', color: '#666' }}>{insight.description}</div>
-              {insight.actionable && (
-                <div style={{ 
-                  marginTop: '8px', 
-                  fontSize: '12px', 
-                  color: '#007bff',
-                  fontStyle: 'italic'
-                }}>
-                  💡 Actionable insight
-                </div>
-              )}
-            </div>
-          ))}
+          {insights.map((insight, idx) => {
+            const textColor = insight.type === 'excellent' ? '#155724' : 
+                              insight.type === 'good' ? '#0c5460' :
+                              insight.type === 'improvement' ? '#856404' :
+                              insight.type === 'warning' ? '#721c24' :
+                              insight.type === 'achievement' ? '#383d41' : 'var(--text-primary)';
+            const descColor = insight.type === 'excellent' ? '#1b6d2e' : 
+                              insight.type === 'good' ? '#116e7d' :
+                              insight.type === 'improvement' ? '#8e6d0a' :
+                              insight.type === 'warning' ? '#8c262f' :
+                              insight.type === 'achievement' ? '#5a6268' : 'var(--text-secondary)';
+            return (
+              <div key={idx} style={{
+                padding: '12px',
+                background: insight.type === 'excellent' ? '#d4edda' : 
+                           insight.type === 'good' ? '#d1ecf1' :
+                           insight.type === 'improvement' ? '#fff3cd' :
+                           insight.type === 'warning' ? '#f8d7da' :
+                           insight.type === 'achievement' ? '#e2e3e5' : 'var(--gray-50)',
+                border: `1px solid ${
+                  insight.type === 'excellent' ? '#c3e6cb' :
+                  insight.type === 'good' ? '#bee5eb' :
+                  insight.type === 'improvement' ? '#ffeaa7' :
+                  insight.type === 'warning' ? '#f5c6cb' :
+                  insight.type === 'achievement' ? '#d6d8db' : 'var(--gray-200)'
+                }`,
+                borderRadius: '8px'
+              }}>
+                <div style={{ fontWeight: 'bold', marginBottom: '5px', color: textColor }}>{insight.title}</div>
+                <div style={{ fontSize: '14px', color: descColor }}>{insight.description}</div>
+                {insight.actionable && (
+                  <div style={{ 
+                    marginTop: '8px', 
+                    fontSize: '12px', 
+                    color: '#007bff',
+                    fontStyle: 'italic'
+                  }}>
+                    💡 Actionable insight
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
 
       {/* Learning Trends */}
       <div>
-        <h4>📊 Learning Trends</h4>
+        <h4 style={{ color: 'var(--text-primary)' }}>📊 Learning Trends</h4>
         {trends.map((trend, idx) => (
           <div key={idx} style={{ marginBottom: '20px' }}>
-            <h5 style={{ margin: '0 0 10px 0', color: '#333' }}>{trend.title}</h5>
+            <h5 style={{ margin: '0 0 10px 0', color: 'var(--text-primary)' }}>{trend.title}</h5>
             
             {trend.type === 'monthly' && (
               <div style={{ display: 'grid', gap: '10px' }}>
@@ -317,11 +329,12 @@ export default function AILearningAnalytics({ userId, token, plans }) {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     padding: '8px',
-                    background: '#f8f9fa',
+                    background: 'var(--gray-50)',
+                    border: '1px solid var(--gray-200)',
                     borderRadius: '5px'
                   }}>
-                    <span style={{ fontWeight: '500' }}>{item.month}</span>
-                    <div style={{ display: 'flex', gap: '15px', fontSize: '14px' }}>
+                    <span style={{ fontWeight: '500', color: 'var(--text-primary)' }}>{item.month}</span>
+                    <div style={{ display: 'flex', gap: '15px', fontSize: '14px', color: 'var(--text-secondary)' }}>
                       <span>📚 {item.tasks} tasks</span>
                       <span>📈 {item.completionRate}%</span>
                       <span>📋 {item.plans} plans</span>
@@ -339,11 +352,12 @@ export default function AILearningAnalytics({ userId, token, plans }) {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     padding: '8px',
-                    background: '#f8f9fa',
+                    background: 'var(--gray-50)',
+                    border: '1px solid var(--gray-200)',
                     borderRadius: '5px'
                   }}>
-                    <span style={{ fontWeight: '500' }}>{item.area}</span>
-                    <div style={{ display: 'flex', gap: '15px', fontSize: '14px' }}>
+                    <span style={{ fontWeight: '500', color: 'var(--text-primary)' }}>{item.area}</span>
+                    <div style={{ display: 'flex', gap: '15px', fontSize: '14px', color: 'var(--text-secondary)' }}>
                       <span>{item.count} plans</span>
                       <span style={{ color: '#007bff' }}>{item.percentage}%</span>
                     </div>

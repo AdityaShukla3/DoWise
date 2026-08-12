@@ -12,7 +12,8 @@ async function auth(req, res, next) {
     if (!user) return res.status(401).json({ message: "User not found" });
     req.user = user;
     next();
-  } catch {
+  } catch (e) {
+    console.error("Auth error:", e);
     res.status(401).json({ message: "Invalid token" });
   }
 }

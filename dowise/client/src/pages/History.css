@@ -1,0 +1,305 @@
+/* History Page Styles - Premium SaaS Aesthetic */
+.history-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+  animation: fadeIn 0.3s ease-out;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  border-bottom: 1px solid var(--gray-200);
+  padding-bottom: var(--spacing-md);
+}
+
+.history-title-box {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.history-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.history-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.back-btn-premium {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: var(--bg-primary);
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+.back-btn-premium:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateX(-4px);
+  background: #f8fafc;
+}
+
+/* History Stats Grid */
+.history-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.history-stat-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.history-stat-card::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+}
+
+.history-stat-card.total::after { background: var(--primary-gradient); }
+.history-stat-card.completed::after { background: var(--secondary-dark); }
+.history-stat-card.ongoing::after { background: var(--info); }
+
+.history-stat-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.history-stat-val {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+/* Filter tabs */
+.history-tabs {
+  display: flex;
+  gap: var(--spacing-sm);
+  border-bottom: 1px solid var(--gray-200);
+  padding-bottom: 2px;
+}
+
+.history-tab-btn {
+  background: transparent;
+  border: none;
+  padding: 10px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  position: relative;
+  transition: var(--transition-fast);
+}
+
+.history-tab-btn:hover {
+  color: var(--primary);
+}
+
+.history-tab-btn.active {
+  color: var(--primary);
+}
+
+.history-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--primary);
+  border-radius: var(--radius-full);
+}
+
+/* Course Cards */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.history-course-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  transition: var(--transition-base);
+}
+
+.history-course-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.course-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+}
+
+.course-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.course-badge {
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.course-badge.completed {
+  background: #ecfdf5;
+  color: var(--success-dark);
+  border: 1px solid #a7f3d0;
+}
+
+.course-badge.ongoing {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.course-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-md);
+  background: var(--gray-50);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-200);
+}
+
+.course-detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.course-detail-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+}
+
+.course-detail-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Progress bar inside history card */
+.course-progress-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.course-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.course-progress-bar {
+  height: 8px;
+  background: var(--gray-200);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.course-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width 0.4s ease-out;
+}
+
+.course-progress-fill.completed { background: var(--secondary-dark); }
+.course-progress-fill.ongoing { background: var(--info); }
+
+/* Empty state */
+.history-empty {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  background: var(--bg-primary);
+  border: 1px dashed var(--gray-300);
+  border-radius: var(--radius-xl);
+  color: var(--text-secondary);
+}
+
+/* Dark mode overrides for History */
+body.dark .back-btn-premium {
+  background: var(--bg-primary);
+  border-color: var(--gray-200);
+  color: var(--text-primary);
+}
+
+body.dark .back-btn-premium:hover {
+  background: var(--gray-50);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+body.dark .course-badge.completed {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #34d399 !important;
+  border-color: rgba(16, 185, 129, 0.3) !important;
+}
+
+body.dark .course-badge.ongoing {
+  background: rgba(59, 130, 246, 0.15) !important;
+  color: #60a5fa !important;
+  border-color: rgba(59, 130, 246, 0.3) !important;
+}

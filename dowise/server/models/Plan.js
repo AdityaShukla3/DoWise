@@ -13,6 +13,7 @@ const PlanSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   goal: { type: String, required: true },
   rawInput: { type: String, required: true },
+  completed: { type: Boolean, default: false },
   tasks: [TaskSchema]
 }, { timestamps: true });
 

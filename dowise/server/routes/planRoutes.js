@@ -63,7 +63,7 @@ router.post("/", auth, async (req, res) => {
     res.status(201).json(plan);
   } catch (err) {
     console.error("Create plan error", err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 
@@ -71,6 +71,38 @@ router.post("/", auth, async (req, res) => {
 router.get("/", auth, async (req, res) => {
   const plans = await Plan.find({ userId: req.user._id }).sort({ createdAt: -1 });
   res.json(plans);
+});
+
+// Get single plan - owner only
+router.get("/:id", auth, async (req, res) => {
+  try {
+    const plan = await Plan.findById(req.params.id);
+    if (!plan) return res.status(404).json({ message: "Plan not found" });
+    if (String(plan.userId) !== String(req.user._id) && req.user.role !== "admin")
+      return res.status(403).json({ message: "Forbidden" });
+
+    res.json(plan);
+  } catch (err) {
+    console.error("get plan", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Complete plan - owner only
+router.patch("/:id/complete", auth, async (req, res) => {
+  try {
+    const plan = await Plan.findById(req.params.id);
+    if (!plan) return res.status(404).json({ message: "Plan not found" });
+    if (String(plan.userId) !== String(req.user._id) && req.user.role !== "admin")
+      return res.status(403).json({ message: "Forbidden" });
+
+    plan.completed = true;
+    await plan.save();
+    res.json(plan);
+  } catch (err) {
+    console.error("complete plan", err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
 
 // Toggle task (index) - owner only

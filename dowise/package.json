@@ -1,18 +1,32 @@
 {
   "name": "dowise",
   "version": "1.0.0",
+  "description": "AI-Powered Learning Path Planner - Full-stack web application",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./server/server.js",
-    "dev": "nodemon ./server/server.js",
+    "start": "cd server && npm start",
+    "dev": "cd server && npm run dev",
+    "client": "cd client && npm start",
+    "server": "cd server && npm run dev",
+    "seed": "node scripts/seed.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "learning",
+    "education",
+    "ai",
+    "planning",
+    "react",
+    "express"
+  ],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "workspaces": [
+    "client",
+    "server"
+  ],
   "dependencies": {
-    "mongoose": "^8.18.0",
-    "nodemon": "^3.1.10"
+    "gsap": "^3.13.0",
+    "mongoose": "^9.8.0"
   }
 }
