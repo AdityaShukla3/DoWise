@@ -3,6 +3,10 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const path = require("path");
+
+// Load environment variables from .env next to this file, regardless of CWD
+dotenv.config({ path: path.join(__dirname, ".env") });
+
 const connectDB = require("./db");
 const authRoutes = require("./routes/authRoutes");
 const aiRoutes = require("./routes/aiRoutes");
@@ -10,13 +14,13 @@ const planRoutes = require("./routes/planRoutes");
 const templateRoutes = require("./routes/templateRoutes");
 const resourceRoutes = require("./routes/resourceRoutes");
 const Template = require("./models/Template");
-
-// Load environment variables from .env next to this file, regardless of CWD
-dotenv.config({ path: path.join(__dirname, ".env") });
+const passport = require("passport");
+require("./config/passport");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(passport.initialize());
 
 app.get("/", (_req, res) => res.send("DoWise API running"));
 

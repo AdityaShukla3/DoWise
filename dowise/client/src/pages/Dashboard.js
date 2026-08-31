@@ -3,9 +3,9 @@ import React, { useEffect, useState, useCallback, useMemo, useRef } from "react"
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 import debounce from "lodash.debounce";
-import AIAssistant from "../components/AIAssistant";
 import AILearningAnalytics from "../components/AILearningAnalytics";
 import TechnologyResourcePlanner from "../components/TechnologyResourcePlanner";
+import CompletionModal from "../components/CompletionModal";
 import { 
   fadeIn, 
   staggerFadeIn, 
@@ -27,9 +27,12 @@ export default function Dashboard() {
   const [plans, setPlans] = useState([]);
   const [current, setCurrent] = useState(null);
   const [creating, setCreating] = useState(false);
+  const [completedPlanData, setCompletedPlanData] = useState(null);
   const [showAI, setShowAI] = useState(false);
   const [aiInsights, setAiInsights] = useState(null);
-  const [loadingAI, setLoadingAI] = useState(false);
+  const [loadingOptimize, setLoadingOptimize] = useState(false);
+  const [loadingAnalyze, setLoadingAnalyze] = useState(false);
+  const [loadingRecommend, setLoadingRecommend] = useState(false);
   const [optimizations, setOptimizations] = useState(null);
   const [recommendations, setRecommendations] = useState(null);
   
@@ -109,7 +112,7 @@ export default function Dashboard() {
       setLoadingInputSuggestions(true);
       try {
         // Get comprehensive topic suggestions
-        const { data } = await axios.post("/api/ai/suggest-topics", { 
+        const { data } = await api.post("/api/ai/suggest-topics", { 
           input: text,
           userId: user?._id
         });
@@ -755,7 +758,7 @@ export default function Dashboard() {
           previousPlans: plans.slice(0, 3).map(p => p.rawInput),
           preferredDuration: "7-14 days"
         };
-        const { data } = await axios.post("/api/ai/suggest", { 
+        const { data } = await api.post("/api/ai/suggest", { 
           input: text, 
           maxTasks: 8,
           userId: user?._id,
@@ -874,18 +877,13 @@ export default function Dashboard() {
   // Complete / Archive a learning plan
   async function archivePlanAsCompleted() {
     if (!current) return;
-    const courseName = current.rawInput;
+    const planToComplete = current;
     try {
       const { data } = await api.patch(`/api/plans/${current._id}/complete`);
       setPlans(plans.map(p => p._id === data._id ? data : p));
       
-      // Toast notification
-      setToast(`Congrats! You have completed "${courseName}" course!`);
-      setTimeout(() => {
-        setToast(null);
-      }, 3000);
-
       setCurrent(null);
+      setCompletedPlanData(planToComplete);
     } catch (err) {
       console.error("Failed to complete plan:", err);
       alert("Failed to complete plan");
@@ -895,7 +893,7 @@ export default function Dashboard() {
   // AI-powered plan optimization
   async function optimizePlan() {
     if (!current) return alert("No plan selected");
-    setLoadingAI(true);
+    setLoadingOptimize(true);
     try {
       const { data } = await api.post("/api/ai/optimize", {
         planId: current._id,
@@ -906,13 +904,13 @@ export default function Dashboard() {
     } catch (err) {
       alert("Failed to optimize plan");
     } finally {
-      setLoadingAI(false);
+      setLoadingOptimize(false);
     }
   }
 
   // AI-powered progress analysis
   async function analyzeProgress() {
-    setLoadingAI(true);
+    setLoadingAnalyze(true);
     try {
       const { data } = await api.post("/api/ai/analyze", {
         userId: user.id || user._id
@@ -921,13 +919,13 @@ export default function Dashboard() {
     } catch (err) {
       alert("Failed to analyze progress");
     } finally {
-      setLoadingAI(false);
+      setLoadingAnalyze(false);
     }
   }
 
   // AI-powered personalized recommendations
   async function getRecommendations() {
-    setLoadingAI(true);
+    setLoadingRecommend(true);
     try {
       const { data } = await api.post("/api/ai/recommend", {
         userId: user.id || user._id,
@@ -939,7 +937,7 @@ export default function Dashboard() {
     } catch (err) {
       alert("Failed to get recommendations");
     } finally {
-      setLoadingAI(false);
+      setLoadingRecommend(false);
     }
   }
 
@@ -987,8 +985,15 @@ export default function Dashboard() {
   const completedPlans = plans.filter(p => p.completed);
 
   return (
-    <div className="dashboard-container">
-      {/* Sidebar Toggle Button (floating on the left margin, stays sticky as you scroll) */}
+    <>
+      {completedPlanData && (
+        <CompletionModal 
+          plan={completedPlanData} 
+          onClose={() => setCompletedPlanData(null)} 
+        />
+      )}
+      <div className="dashboard-container">
+        {/* Sidebar Toggle Button (floating on the left margin, stays sticky as you scroll) */}
       <button 
         onClick={() => setIsSidebarOpen(true)}
         className="sidebar-toggle-btn"
@@ -1031,6 +1036,20 @@ export default function Dashboard() {
             <span style={{ fontSize: "1.1rem" }}>📚</span>
             <span>My Learning Plans</span>
           </button>
+
+          <button 
+            onClick={() => {
+              setIsSidebarOpen(false);
+              const topic = prompt("Enter a technology topic to start a curated revision quiz (e.g. React, Docker):");
+              if (topic && topic.trim()) {
+                window.open(`/quick-quiz/${encodeURIComponent(topic.trim())}`, '_blank');
+              }
+            }}
+            className="sidebar-menu-item"
+          >
+            <span style={{ fontSize: "1.1rem" }}>📝</span>
+            <span>Revise Topic</span>
+          </button>
         </div>
       </div>
       {/* Dashboard Header */}
@@ -1070,12 +1089,12 @@ export default function Dashboard() {
             <div className="ai-buttons-grid">
               <button 
                 onClick={optimizePlan} 
-                disabled={loadingAI || !current}
+                disabled={loadingOptimize || !current}
                 className="ai-button optimize"
-                onMouseEnter={(e) => !loadingAI && !current && buttonHover(e.currentTarget)}
-                onMouseLeave={(e) => !loadingAI && !current && buttonHoverOut(e.currentTarget)}
+                onMouseEnter={(e) => !loadingOptimize && !current && buttonHover(e.currentTarget)}
+                onMouseLeave={(e) => !loadingOptimize && !current && buttonHoverOut(e.currentTarget)}
               >
-                {loadingAI ? (
+                {loadingOptimize ? (
                   <>
                     <span className="loading-spinner" style={{ marginRight: "8px" }}></span>
                     Analyzing...
@@ -1087,12 +1106,12 @@ export default function Dashboard() {
 
               <button 
                 onClick={analyzeProgress} 
-                disabled={loadingAI}
+                disabled={loadingAnalyze}
                 className="ai-button analyze"
-                onMouseEnter={(e) => !loadingAI && buttonHover(e.currentTarget)}
-                onMouseLeave={(e) => !loadingAI && buttonHoverOut(e.currentTarget)}
+                onMouseEnter={(e) => !loadingAnalyze && buttonHover(e.currentTarget)}
+                onMouseLeave={(e) => !loadingAnalyze && buttonHoverOut(e.currentTarget)}
               >
-                {loadingAI ? (
+                {loadingAnalyze ? (
                   <>
                     <span className="loading-spinner" style={{ marginRight: "8px" }}></span>
                     Analyzing...
@@ -1104,12 +1123,12 @@ export default function Dashboard() {
 
               <button 
                 onClick={getRecommendations} 
-                disabled={loadingAI}
+                disabled={loadingRecommend}
                 className="ai-button recommend"
-                onMouseEnter={(e) => !loadingAI && buttonHover(e.currentTarget)}
-                onMouseLeave={(e) => !loadingAI && buttonHoverOut(e.currentTarget)}
+                onMouseEnter={(e) => !loadingRecommend && buttonHover(e.currentTarget)}
+                onMouseLeave={(e) => !loadingRecommend && buttonHoverOut(e.currentTarget)}
               >
-                {loadingAI ? (
+                {loadingRecommend ? (
                   <>
                     <span className="loading-spinner" style={{ marginRight: "8px" }}></span>
                     Thinking...
@@ -1207,9 +1226,10 @@ export default function Dashboard() {
               setInput("");
               setSuggest(null);
             }}>×</button>
-            <div className="input-section" style={{ margin: 0, border: "none", boxShadow: "none", padding: 0 }}>
-              <div className="input-header" style={{ flexDirection: "column", alignItems: "flex-start", gap: "var(--spacing-xs)" }}>
-                <h2 className="input-title">📝 Create Custom Task Plan</h2>
+            <div style={{ maxHeight: '75vh', overflowY: 'auto', paddingRight: '10px' }}>
+              <div className="input-section" style={{ margin: 0, border: "none", boxShadow: "none", padding: 0 }}>
+                <div className="input-header" style={{ flexDirection: "column", alignItems: "flex-start", gap: "var(--spacing-xs)" }}>
+                  <h2 className="input-title">📝 Create Custom Task Plan</h2>
                 <p style={{ color: "var(--text-secondary)", fontSize: "0.9rem", margin: "0 0 var(--spacing-md) 0" }}>
                   Type a specific goal (e.g., "Build a chat app") to quickly generate a custom task checklist.
                 </p>
@@ -1407,6 +1427,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+      </div>
       )}
 
       {/* Current Plan Tasks */}
@@ -1817,10 +1838,6 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-
-      {/* AI Assistant Chat Bot */}
-      <AIAssistant userId={user?._id} token={token} />
-
       {/* Modern Page Footer */}
       <footer className="planner-footer-premium" style={{ 
         marginTop: "var(--spacing-2xl)", 
@@ -1873,6 +1890,7 @@ export default function Dashboard() {
         </div>
       )}
     </div>
+    </>
   );
 }
 

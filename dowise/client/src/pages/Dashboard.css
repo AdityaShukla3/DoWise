@@ -92,6 +92,14 @@
   z-index: 10;
 }
 
+.modal-content .input-suggestions {
+  position: relative;
+  top: 0;
+  max-height: none;
+  box-shadow: none;
+  border: none;
+}
+
 .suggestion-item {
   padding: var(--spacing-md);
   border-bottom: 1px solid var(--gray-100);

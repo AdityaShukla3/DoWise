@@ -339,6 +339,18 @@ export default function TechnologyResourcePlanner({ token, onSelectPlan, onResou
               📋 Create Study Plan
             </button>
           </div>
+          
+          {/* Syllabus/Crux Display */}
+          {result.syllabus && result.syllabus.length > 0 && (
+            <div className="syllabus-section-premium" style={{ marginBottom: '1.5rem', padding: '1rem', background: 'var(--bg-secondary)', borderRadius: '12px', borderLeft: '4px solid var(--accent-primary)' }}>
+              <h4 style={{ margin: '0 0 1rem 0', color: 'var(--text-primary)', fontSize: '1.1rem' }}>📌 The Crux / Syllabus</h4>
+              <ul style={{ margin: 0, paddingLeft: '1.2rem', color: 'var(--text-secondary)' }}>
+                {result.syllabus.map((item, idx) => (
+                  <li key={idx} style={{ marginBottom: '0.4rem' }}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {result.prerequisites && result.prerequisites.length > 0 && (
             <div className="prerequisites-container">

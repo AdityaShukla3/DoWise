@@ -26,7 +26,7 @@
 
 
 import React, { useEffect, useRef, useState } from "react";
-import { BrowserRouter, Routes, Route, Link, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import AuthProvider, { useAuth } from "./context/AuthContext";
 import axios from "axios";
 import Dashboard from "./pages/Dashboard";
@@ -34,6 +34,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import History from "./pages/History";
 import Revision from "./pages/Revision";
+import QuickQuiz from "./pages/QuickQuiz";
 import AnimatedRoute from "./components/AnimatedRoute";
 import { fadeIn, pageTransition } from "./utils/animations";
 import "./App.css";
@@ -140,6 +141,60 @@ function PrivateRoute({ children }) {
   return children;
 }
 
+function OAuthSuccess() {
+  const { saveSession } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const token = params.get("token");
+
+    if (token) {
+      try {
+        const base64Url = token.split(".")[1];
+        const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        const jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split("")
+            .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+            .join("")
+        );
+        const payload = JSON.parse(jsonPayload);
+        
+        const user = {
+          id: payload.id,
+          name: payload.name,
+          email: payload.email,
+          role: payload.role || "user"
+        };
+        
+        saveSession(user, token);
+        navigate("/");
+      } catch (err) {
+        console.error("OAuth token parsing failed:", err);
+        navigate("/login");
+      }
+    } else {
+      navigate("/login");
+    }
+  }, [location, saveSession, navigate]);
+
+  return (
+    <div style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "80vh",
+      fontSize: "18px",
+      fontWeight: "600",
+      color: "var(--text-secondary)"
+    }}>
+      🔄 Setting up your Google session...
+    </div>
+  );
+}
+
 export default function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem("theme") || "light");
 
@@ -189,6 +244,16 @@ export default function App() {
               }
             />
             <Route
+              path="/quick-quiz/:topic"
+              element={
+                <PrivateRoute>
+                  <AnimatedRoute>
+                    <QuickQuiz />
+                  </AnimatedRoute>
+                </PrivateRoute>
+              }
+            />
+            <Route
               path="/login"
               element={
                 <AnimatedRoute>
@@ -203,6 +268,10 @@ export default function App() {
                   <Signup />
                 </AnimatedRoute>
               }
+            />
+            <Route
+              path="/oauth-success"
+              element={<OAuthSuccess />}
             />
           </Routes>
         </div>

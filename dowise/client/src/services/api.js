@@ -44,6 +44,7 @@ api.interceptors.response.use(
 export const authService = {
   login: (email, password) => api.post('/api/auth/login', { email, password }),
   signup: (name, email, password) => api.post('/api/auth/signup', { name, email, password }),
+  verifyOtp: (email, otp) => api.post('/api/auth/verify-otp', { email, otp }),
   logout: () => api.post('/api/auth/logout'),
 };
 
@@ -62,8 +63,6 @@ export const templateService = {
 
 export const aiService = {
   getSuggestions: (input) => api.post('/api/ai/suggest', { input }),
-  getAnalytics: (userId) => api.get(`/api/ai/analytics/${userId}`),
-  getOptimizations: (planId) => api.get(`/api/ai/optimizations/${planId}`),
 };
 
 export default api;
